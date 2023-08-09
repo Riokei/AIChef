@@ -22,7 +22,38 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label">Ingredient</label>
-                        <InputText placeholder="Add Ingredient" maxlength="40" @bind-Value="meal.ingredient" class="form-control mb-2"/>
+                        <InputText placeholder="Add Ingredient" maxlength="40" @bind-Value="meal.ingredient" class="form-control mb-2" />
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-outline-info" @onclick="AddIngredient">Add</button>
+                        <button class="btn btn-outline-danger" @onclick="ClearAll">Clear</button>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <div class="table-responsive">
+                            <table class="table table-striped rounded-2">
+                                <thead>
+                                    <tr>
+                                        <th>Ingredients</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in ingredients)
+                                    {
+                                        <tr gx-2>
+                                            <td>
+                                                @item.Description
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <button class="btn btn-outline-danger" @onclick="() => RemoveIngredient(item.Id)"><i class="bi bi-trash-fill"></i></button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info rounded">Generate</button>
                     </div>
                 </div>
             </EditForm>
@@ -33,12 +64,34 @@
 @code {
     private EditContext? editcontext;
     private Meal meal = new();
+    private List<Ingredient> ingredients = new();
     protected override void OnInitialized()
     {
         editcontext = new(meal);
     }
-    private class Meal{
-        public string? mealtime{ get; set; }
-        public string? ingredient{ get; set; }
+    private class Meal
+    {
+        public string? mealtime { get; set; }
+        public string? ingredient { get; set; }
+    }
+    private void AddIngredient()
+    {
+        if (!string.IsNullOrEmpty(meal.ingredient))
+        {
+            ingredients.Add(new Ingredient()
+                {
+                    Id = Guid.NewGuid(),
+                    Description = meal.ingredient
+                });
+        }
+        meal.ingredient = string.Empty;
+    }
+    private void ClearAll()
+    {
+        ingredients.Clear();
+    }
+    private void RemoveIngredient(Guid id)
+    {
+        ingredients.Remove(ingredients.First(x => x.Id == id));
     }
 }
