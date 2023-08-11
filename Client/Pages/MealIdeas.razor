@@ -1,5 +1,6 @@
 ﻿@page "/mealideas"
 @using AIChef.Shared;
+@inject NavigationManager navigationManager
 
 @if (loaded == true) {
 <div class="container">
@@ -21,12 +22,29 @@
 } else
 {
     <div class="container mt-5">
-        <p>Loading...</p>
+        <h3>Recipe State Values:</h3>
+        <p>@rState.MealTime</p>
+        @foreach (var item in rState.Ingredients)
+        {
+            <p>@item.Description</p>
+        }
+
     </div>
 }
 
 @code {
     private List<Idea> ideas = new();
     private bool loaded = false;
+    [CascadingParameter]
+    private RecipeState? rState { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (rState is null)
+        {
+            navigationManager.NavigateTo("/", forceLoad: true);
+            return;
+        }
+    }
 
 }
