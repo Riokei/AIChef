@@ -74,7 +74,7 @@
     }
     private Meal meal = new();
     private List<Ingredient> ingredients = new();
-    string? holder;
+    
 
 
 
@@ -93,7 +93,7 @@
     {
         if (e != null)
         {
-            holder = e;
+            meal.ingredient = e;
 
         }
     }
@@ -101,17 +101,16 @@
     private void AddIngredient()
     {
         
-        if (string.IsNullOrWhiteSpace(meal.ingredient))
+        if (string.IsNullOrEmpty(meal.ingredient))        
         {
-            meal.ingredient = holder;
+            meal.ingredient = string.Empty;
+        }else
+        { 
             ingredients.Add(new Ingredient()
                 {
                     Id = Guid.NewGuid(),
                     Description = meal.ingredient
                 });
-        }else
-        {
-            meal.ingredient = string.Empty;
         }
 
     }

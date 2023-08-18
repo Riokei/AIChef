@@ -1,7 +1,7 @@
 ﻿@page "/search"
 
 <h3>Autocomplete Search Test</h3>
-<div class="auto complete w-25">
+<div class="auto complete w-100">
     <input @oninput="HandleInput" class="form-control" id="SearchInput" list="@holder" />
     <datalist class="options" id="@holder">
         @if (holder.Any())
