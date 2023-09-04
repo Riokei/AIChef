@@ -3,6 +3,7 @@ using AIChef.Shared;
 using System.Text.Json;
 using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
+using System.Linq.Expressions;
 
 namespace AIChef.Server.Services
 {
@@ -126,9 +127,63 @@ namespace AIChef.Server.Services
             };
         }
 
-        Task<List<Idea>> IOpenAiAPI.CreateRecipeIdeas(string mealtime, List<string> ingredients)
+        async Task<List<Idea>> IOpenAiAPI.CreateRecipeIdeas(string mealtime, List<string> ingredientsList)
         {
-            throw new NotImplementedException();
+            string url = $"{_baseUrl}chat/completions";
+            string systemPrompt = "You are a world-renowned chef. I will send you a list of ingredients and a meal time. You will respond with 5 ideas for dishes.";
+            string userPrompt = "";
+            string ingredientPrompt = "";
+            string ingredients = string.Join(",", ingredientsList);
+            if (string.IsNullOrEmpty(ingredients))
+            {
+                ingredientPrompt = "Suggest some ingredients for me";
+            } else
+            {
+                ingredientPrompt = $"I have {ingredients}";
+            }
+            userPrompt = $"The meal I want to cook is {mealtime}. {ingredientPrompt}";
+            ChatMessage systemMessage = new()
+            {
+                Role = "system",
+                Content = $"{systemPrompt}"
+                
+            };
+            ChatMessage userMessage = new()
+            {
+                Role = "user",
+                Content = $"{userPrompt}"
+            };
+            ChatRequest request = new()
+            {
+                Model = "gpt-3.5-turbo-0613",
+                Messages = new[] {systemMessage, userMessage},
+                Functions = new[] {_ideaFunction},
+                FunctionCall = new {Name = _ideaFunction.Name}
+            };
+
+            HttpResponseMessage httpResponse = await _httpClient.PostAsJsonAsync(url, request, _jsonOptions);
+            ChatResponse? response = await httpResponse.Content.ReadFromJsonAsync<ChatResponse>();
+            //get the first message in the function call
+            ChatFunctionResponse? functionResponse = response.Choices?
+                .FirstOrDefault(m => m.Message?.FunctionCall is not null)?
+                .Message?
+                .FunctionCall;
+            Result<List<Idea>>? ideaResult = new();
+            if(functionResponse.Arguments is not null)
+            {
+                try
+                {
+                    ideaResult = JsonSerializer.Deserialize<Result<List<Idea>>>(functionResponse.Arguments, _jsonOptions);
+                }
+                catch (Exception ex) {
+                    ideaResult = new()
+                    {
+                        Exception = ex,
+                        ErrorMessage = await httpResponse.Content.ReadAsStringAsync()
+                    };
+                }
+            }
+            return ideaResult?.Data ?? new List<Idea>();
         }
     }
 }
