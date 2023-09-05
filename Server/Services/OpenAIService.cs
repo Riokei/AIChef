@@ -10,7 +10,7 @@ namespace AIChef.Server.Services
     public class OpenAIService : IOpenAiAPI
     {
         private readonly IConfiguration _configuration;
-        private static readonly string _baseUrl = "https://api.openai.com/v1";
+        private static readonly string _baseUrl = "https://api.openai.com/v1/";
         private static readonly HttpClient _httpClient = new();
         private readonly JsonSerializerOptions _jsonOptions;
 
