@@ -11,7 +11,7 @@
         <div class="list-group">
             @foreach (var idea in ideas)
             {
-                <button class="list-group-item list-group-item-action list-group-item-info P2">
+                <button @onclick="() => GetRecipe(idea.index)" class="list-group-item list-group-item-action list-group-item-info P2">
                     <div class="d-flex w-100 justify-content-sm-between">
                         <h2 class="mb-1 fw-bold">@idea.title</h2>                        
                     </div>
@@ -85,5 +85,8 @@
         }
     //
     }
-
+    private void GetRecipe(int index)
+    {
+        navigationManager.NavigateTo($"/mealRecipe/{index}");
+    } 
 }
