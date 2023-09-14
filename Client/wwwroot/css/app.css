@@ -111,8 +111,12 @@ a, .btn-link {
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+label {
+    display: block;
+    margin-bottom: 10px;
+}
 
-    /*Auto Complete from Mike's Dotnetting*/
+/*Auto Complete from Mike's Dotnetting
 .autocomplete {
     position: relative;
 }
@@ -153,3 +157,4 @@ a, .btn-link {
                 background: lightgrey;
                 color: var(--bs-body);
             }
+        */

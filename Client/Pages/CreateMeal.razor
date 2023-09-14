@@ -14,7 +14,7 @@
                 <div class="row gy-2">
                     <div class="col-12">
                         <label class="form-label">Meal Time</label>
-                        <InputSelect @bind-Value="meal.mealtime" class="form-select">
+                        <InputSelect @bind-Value="@meal.mealtime" class="form-select">
                             <option value="Breakfast">Breakfast</option>
                             <option value="Lunch">Lunch</option>
                             <option value="Dinner">Dinner</option>
@@ -24,7 +24,7 @@
                     <div class="col-12">
                         <label class="form-label">Ingredient</label>
                         @* <InputText placeholder="Add Ingredient" maxlength="40" @bind-Value="meal.ingredient" class="form-control mb-2" /> *@
-                        <AutoCompleteComponent selectedIngredient="BindValue"></AutoCompleteComponent>
+                        <AutoCompleteComponent InputValue="@meal.ingredient" InputValueChanged="StateHasChanged"></AutoCompleteComponent>
                     </div>
                     <div class="col-12">
                         <button class="btn btn-outline-info" @onclick="AddIngredient">Add</button>
@@ -66,17 +66,15 @@
 @code {
     [CascadingParameter]
     private RecipeState? rState { get; set; }
-    private EditContext? editcontext;
+    private EditContext? editcontext;    
     private class Meal
     {
         public string? mealtime { get; set; }
+        
         public string? ingredient { get; set; }
     }
     private Meal meal = new();
     private List<Ingredient> ingredients = new();
-    
-
-
 
     protected override void OnInitialized()
     {
@@ -89,18 +87,9 @@
         meal.mealtime = rState.MealTime;
         ingredients = rState.Ingredients;
     }
-    private void BindValue(string e)
-    {
-        if (e != null)
-        {
-            meal.ingredient = e;
-
-        }
-    }
-
     private void AddIngredient()
     {
-        
+
         if (string.IsNullOrEmpty(meal.ingredient))        
         {
             meal.ingredient = string.Empty;
@@ -111,12 +100,13 @@
                     Id = Guid.NewGuid(),
                     Description = meal.ingredient
                 });
+
         }
 
     }
     private void ClearAll()
     {
-        ingredients.Clear();
+        meal.ingredient = string.Empty;
     }
     private void RemoveIngredient(Guid id)
     {
