@@ -70,7 +70,7 @@
     private class Meal
     {
         public string? mealtime { get; set; }
-        
+
         public string? ingredient { get; set; }
     }
     private Meal meal = new();
@@ -100,6 +100,7 @@
                     Id = Guid.NewGuid(),
                     Description = meal.ingredient
                 });
+            meal.ingredient = string.Empty;
 
         }
 
