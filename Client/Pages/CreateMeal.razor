@@ -24,7 +24,7 @@
                     <div class="col-12">
                         <label class="form-label">Ingredient</label>
                         @* <InputText placeholder="Add Ingredient" maxlength="40" @bind-Value="meal.ingredient" class="form-control mb-2" /> *@
-                        <AutoCompleteComponent InputValue="@meal.ingredient" InputValueChanged="StateHasChanged"></AutoCompleteComponent>
+                        <AutoCompleteComponent @bind-InputValue="@meal.ingredient"></AutoCompleteComponent>
                     </div>
                     <div class="col-12">
                         <button class="btn btn-outline-info" @onclick="AddIngredient">Add</button>

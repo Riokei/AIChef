@@ -1,38 +1,4 @@
-﻿<!--
-    You should pass meal.Ingredient to your component as a parameter and use that as the value of your component's input element so that your component can receive changes to it from the parent component.
-
-Based on how you built your component, you'd probably need to implement OnParametersSet to keep the value in sync when it changes
-
-Alternatively, you could implement some public method on your component to clear the input text, then call that method when you press the clear button. For example:
-
-// in CreateMeal.razor
-<AutoCompleteComponent ... @ref="autoComplete" />
-
-@code {
-    AutoCompleteComponent? autoComplete;
-    // ...
-    private void ClearAll()
-    {
-    ingredients.Clear();
-    autoComplete.Clear();
-    }
-}
-
-// in AutoCompleteComponent.razor
-public void Clear()
-{
-  filter = string.Empty;
-  // any other cleanup you need to do
-}
-
-
-That being said, I think passing meal.Ingredient as a parameter is a cleaner approach. You could even eliminate the need for a callback in that component and let it change the string directly
-
-Personal note:
-further research here https://blazorschool.com/tutorial/blazor-wasm/dotnet7/cascading-parameter-855507
--->
-
-<div class="auto complete w-100">
+﻿<div class="auto complete w-100">
     <input @oninput="HandleInput" class="form-control" id="SearchInput" list="@holder" />
     <datalist class="options" id="@holder">
         @if (holder.Any())
@@ -74,7 +40,7 @@ further research here https://blazorschool.com/tutorial/blazor-wasm/dotnet7/casc
             if (filter != null)
             {
                 InputValue = filter;
-                await InputValueChanged.InvokeAsync();
+                await InputValueChanged.InvokeAsync(InputValue);
             }
         }
 
