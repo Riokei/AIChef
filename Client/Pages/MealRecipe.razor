@@ -1,13 +1,28 @@
 ﻿@page "/mealRecipe/{Index:int}"
 @using AIChef.Shared;
 @using System.Text.Json;
+@using System.Web;
 @inject HttpClient http;
 @inject NavigationManager navigation;
 
 <div class="container mt-5">
-    <h3>Meal Recipe</h3>
-    <p>Idea Index = @Index</p>
-    <p>Recipe Title = @title</p>
+    <div class="d-flex flex-column flex-lg-row justify-content-start">
+        <div class="text-center text-lg-start">
+            <img class="rounded-3" />
+        </div>
+        <div class="flex-grow-1 px-3">
+            <h1 class="fw-bold">@title</h1>
+            <p>Description Goes Here</p>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2">
+        <div class="col mt-3">
+            <h2>Ingredients</h2>
+        </div>
+        <div class="col">
+            <h2>Instructions</h2>
+        </div>
+    </div>
 </div>
 
 
@@ -18,10 +33,41 @@
     [Parameter]
     public int Index { get; set; }
 
-    private string title;
+    private string? title;
+    private string? recipeImageURL = string.Empty;
+    private Recipe recipe = new();
 
     protected override void OnInitialized()
     {
-        title = recipeState.Ideas.FirstOrDefault(i => i.index == Index).title;
+        GetRecipe();
+    }
+    private async void GetRecipe()
+    {
+        string baseuri = "Recipe/GetRecipe";
+        try
+        {
+            title = recipeState.Ideas.FirstOrDefault(i => i.index == Index).title;
+            RecipeParms recipeParms = new()
+                {
+                    MealTime = recipeState.MealTime,
+                    Ingredients = recipeState.Ingredients,
+                    SelectedIdea = title
+                };
+            //get recipe image
+            HttpResponseMessage responseImage = await http.GetAsync($"Recipe/GetRecipe?title={HttpUtility.UrlEncode(title)}");
+            var recipeImage = await responseImage.Content.ReadFromJsonAsync<RecipeImage>();
+            recipeImageURL = recipeImage!.data[0].url;
+
+            //get recipe
+            HttpResponseMessage responseRecipe = await http.PostAsJsonAsync(baseuri, recipeParms);
+            responseRecipe.EnsureSuccessStatusCode();
+
+            recipe = await responseRecipe.Content.ReadFromJsonAsync<Recipe>();
+            StateHasChanged();
+        }
+        catch
+        {
+            Console.WriteLine("Error: Could not generate recipe");
+        }
     }
 }
