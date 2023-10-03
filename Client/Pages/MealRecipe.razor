@@ -4,6 +4,7 @@
 @using System.Web;
 @inject HttpClient http;
 @inject NavigationManager navigation;
+@inject IJSRuntime Js;
 
 @if (loaded == true)
 {
@@ -15,6 +16,11 @@
             <div class="flex-grow-1 px-3">
                 <h1 class="fw-bold">@recipe.title</h1>
                 <p>@recipe.summary</p>
+                <div class="text-end">
+                    <button class="btn btn-info d-print-none" @onclick="Print">
+                        Print
+                    </button>
+                </div>
             </div>
         </div>
         <div class="row row-cols-1 row-cols-md-2">
@@ -91,5 +97,9 @@ else
         {
             Console.WriteLine("Error: Could not generate recipe");
         }
+    }
+    private async Task Print()
+    {
+        await Js.InvokeVoidAsync("printInvoke");
     }
 }
